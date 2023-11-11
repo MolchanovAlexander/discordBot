@@ -1,12 +1,16 @@
-const Discord = require('discord.js');
-
 /* 
 */
+
 const { Client, IntentsBitField} = require('discord.js')
 const client = new Client({
-    
+    intents: [
+      IntentsBitField.Flags.Guilds,
+      IntentsBitField.Flags.GuildMembers,
+      IntentsBitField.Flags.GuildMessages,
+      IntentsBitField.Flags.MessageContent
+    ]
 });
-
+require('dotenv').config();
 
 const prefix = '!'; // Задайте ваш префікс бота
 
@@ -14,23 +18,28 @@ client.on('ready', () => {
   console.log(`Бот ${client.user.tag} готовий!`);
 });
 
-client.on('message', (message) => {
-  // Перевірте, чи повідомлення відправлене боту
-  if (message.author.bot) return;
+client.on('messageCreate', (message) => {
+  console.log(message.content);
 
-  // Перевірте, чи повідомлення починається з префіксу
-  if (!message.content.startsWith(prefix)) return;
-
-  // Отримайте команду та аргументи з повідомлення
-  const args = message.content.slice(prefix.length).trim().split(/ +/);
-  const command = args.shift().toLowerCase();
-
-  // Перевірте, чи команда - "echo"
-  if (command === 'echo') {
+   // Перевірте, чи повідомлення відправлене боту
+   if (message.author.bot) return;
+  // // Перевірте, чи команда - "echo"
+  if (message.content === 'echo') {
     // Відправте те ж саме повідомлення, що і отримано
-    message.channel.send(args.join(' '));
+     message.reply(message.content);
   }
 });
+client.on('interactionCreate', (interaction)=>{
+  if(!interaction.isChatInputCommand()) return;
+
+  if(interaction.commandName === 'hey'){
+    interaction.reply("Guf rip")
+  }
+  if(interaction.commandName === 'ping'){
+    interaction.reply("Dniwe")
+  }
+  console.log(interaction.commandName);
+})
 
 // Підключення бота до серверу Discord
-client.login('8fc5614fdf094dddb3d204a623f416a57f7ea46ee7ff93eae2b28ab4dc0845b1');
+client.login(process.env.DISCORD_TOKEN);
